@@ -1,11 +1,17 @@
 import { Board } from '../features/board/Board';
 import { createLocalStorageNotesRepository } from '../services/localStorageNotesRepository';
+import { withSimulatedLatency } from '../services/withSimulatedLatency';
 import styles from './App.module.css';
 import { NotesPersistence } from './NotesPersistence';
 import { NotesProvider } from './notesContext';
 import { WELCOME_NOTES } from './welcomeNotes';
 
-const repository = createLocalStorageNotesRepository();
+/**
+ * localStorage behind a simulated-latency decorator: the app consumes it as a
+ * genuinely asynchronous API (loading gate, in-flight saves), and swapping in
+ * a real REST client is a one-line change here.
+ */
+const repository = withSimulatedLatency(createLocalStorageNotesRepository(), 250);
 
 export function App() {
   return (

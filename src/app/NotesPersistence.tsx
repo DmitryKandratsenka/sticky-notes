@@ -25,10 +25,13 @@ interface NotesPersistenceProps {
  * - pagehide flushes the latest state through the same save path, covering
  *   the tab being closed inside the debounce window.
  */
+type SaveStatus = 'idle' | 'saving' | 'saved';
+
 export function NotesPersistence({ repository, seed, children }: NotesPersistenceProps) {
   const state = useNotesState();
   const dispatch = useNotesDispatch();
   const [ready, setReady] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
 
   const notesRef = useRef(state.notes);
   useEffect(() => {
@@ -60,16 +63,32 @@ export function NotesPersistence({ repository, seed, children }: NotesPersistenc
   useEffect(() => {
     if (!ready) return;
     const timer = setTimeout(() => {
+      setSaveStatus('saving');
       saveChainRef.current = saveChainRef.current
         .then(() => repository.save(Object.values(state.notes)))
+        .then(() => {
+          setSaveStatus('saved');
+        })
         .catch((error: unknown) => {
           console.warn('Sticky Notes: saving failed.', error);
+          setSaveStatus('idle');
         });
     }, SAVE_DEBOUNCE_MS);
     return () => {
       clearTimeout(timer);
     };
   }, [state.notes, ready, repository]);
+
+  // "Saved" lingers briefly, then the chip fades away.
+  useEffect(() => {
+    if (saveStatus !== 'saved') return;
+    const timer = setTimeout(() => {
+      setSaveStatus('idle');
+    }, 1600);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [saveStatus]);
 
   useEffect(() => {
     if (!ready) return;
@@ -89,5 +108,17 @@ export function NotesPersistence({ repository, seed, children }: NotesPersistenc
       </div>
     );
   }
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <div
+        className={styles.saveChip}
+        data-visible={saveStatus !== 'idle'}
+        role="status"
+        aria-live="polite"
+      >
+        {saveStatus === 'saving' ? 'Saving…' : saveStatus === 'saved' ? 'Saved ✓' : ''}
+      </div>
+    </>
+  );
 }
