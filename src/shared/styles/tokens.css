@@ -1,0 +1,13 @@
+/* Design tokens. Note colors live in the palette in src/model. */
+:root {
+  --color-desk: #ece5d8;
+  --color-ink: #3c3530;
+  --color-ink-soft: #79706a;
+
+  --shadow-note: 0 1px 2px rgb(60 50 30 / 0.18), 0 6px 16px -6px rgb(60 50 30 / 0.28);
+
+  --radius-note: 2px;
+
+  --font-hand: 'Shantell Sans', 'Comic Sans MS', cursive;
+  --font-ui: 'Shantell Sans', system-ui, sans-serif;
+}

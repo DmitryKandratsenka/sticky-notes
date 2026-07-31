@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <g transform="rotate(-6 16 16)">
+    <path d="M5 5h22v22H13l-8-8z" fill="#ffd84d" />
+    <path d="M5 19h8v8z" fill="#e0b32e" />
+  </g>
+</svg>
