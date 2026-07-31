@@ -17,6 +17,7 @@ interface NoteProps {
 interface NoteStyle extends CSSProperties {
   '--note-paper': string;
   '--note-tilt': string;
+  '--note-z': number;
 }
 
 /** Resting tilt in one of a few deterministic steps, so the desk looks hand-made. */
@@ -44,14 +45,16 @@ export const Note = memo(function Note({ note, boardRef }: NoteProps) {
     move.onPointerDown(event);
   };
 
+  // Stacking goes through --note-z (not an inline z-index) so gesture CSS
+  // classes can override it by specificity without fighting inline styles.
   const style: NoteStyle = {
     left: note.rect.x,
     top: note.rect.y,
     width: note.rect.width,
     height: note.rect.height,
-    zIndex: note.zIndex,
     '--note-paper': NOTE_PAPER_COLORS[note.color],
     '--note-tilt': `${restingTiltDeg(note.id)}deg`,
+    '--note-z': note.zIndex,
   };
 
   return (

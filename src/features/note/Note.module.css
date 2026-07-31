@@ -1,5 +1,6 @@
 .note {
   position: absolute;
+  z-index: var(--note-z, 1);
   /* transform is reserved for gesture code; nothing else may set it. */
   user-select: none;
   touch-action: none;
@@ -13,12 +14,20 @@
 
 /* Applied imperatively while a move gesture is live. */
 .note.lifted {
+  /* Above the awake trash zone (9999) and any organically grown note z. */
+  z-index: 10000;
   will-change: transform;
 }
 
 .note.lifted .paper {
   transform: rotate(0deg) scale(1.02);
   box-shadow: var(--shadow-note-lifted);
+}
+
+/* Hovering over the trash: the note braces for the toss. */
+.note.doomed .paper {
+  transform: rotate(2.5deg) scale(0.9);
+  opacity: 0.82;
 }
 
 .paper {

@@ -1,0 +1,59 @@
+.zone {
+  position: absolute;
+  right: 28px;
+  bottom: 24px;
+  width: 92px;
+  height: 74px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: 2px dashed color-mix(in oklab, var(--color-ink-soft), transparent 35%);
+  border-radius: 14px;
+  color: color-mix(in oklab, var(--color-ink-soft), transparent 20%);
+  background: rgb(120 96 60 / 0.05);
+  opacity: 0.65;
+  transition:
+    transform 160ms ease,
+    opacity 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.icon {
+  width: 26px;
+  height: 26px;
+}
+
+.lid {
+  transform-origin: 17px 6px;
+  transition: transform 160ms ease;
+}
+
+.label {
+  font-family: var(--font-hand);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+}
+
+/* A note is being dragged somewhere on the desk. */
+.zone.awake {
+  opacity: 1;
+  transform: scale(1.05);
+  z-index: 9999; /* above resting notes, below the lifted note (10000) */
+}
+
+/* The dragged pointer is over the tray: dropping now deletes. */
+.zone.hot {
+  color: #b3402e;
+  border: 2px solid color-mix(in oklab, #c74f36, transparent 25%);
+  background: rgb(199 79 54 / 0.12);
+  transform: scale(1.14) rotate(-2deg);
+}
+
+.zone.hot .lid {
+  transform: rotate(14deg) translateY(-1.5px);
+}
