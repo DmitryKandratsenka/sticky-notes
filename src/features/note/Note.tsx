@@ -11,6 +11,7 @@ import { useNotesDispatch } from '../../app/notesContext';
 import { type Note as NoteData } from '../../model/note';
 import { hashString } from '../../shared/lib/hash';
 import styles from './Note.module.css';
+import { NoteColorPicker } from './NoteColorPicker';
 import { NOTE_PAPER_COLORS } from './notePalette';
 import { NoteTextEditor } from './NoteTextEditor';
 import { ResizeHandles } from './ResizeHandles';
@@ -106,6 +107,7 @@ export const Note = memo(function Note({ note, boardRef }: NoteProps) {
         ) : (
           <div className={styles.text}>{note.text}</div>
         )}
+        <NoteColorPicker noteId={note.id} current={note.color} />
         {!editing && <ResizeHandles onHandlePointerDown={resize.onHandlePointerDown} />}
       </div>
     </article>

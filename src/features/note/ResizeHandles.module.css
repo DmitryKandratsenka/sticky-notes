@@ -7,7 +7,7 @@
 
 /*
  * The visible nub is smaller than the hit area. Visibility is driven by
- * --handle-reveal, which the note sets on hover/focus (a custom property is
+ * --note-ui-reveal, which the note sets on hover/focus (a custom property is
  * the clean way to cross the CSS-module boundary between Note and handles).
  */
 .handle::after {
@@ -20,7 +20,7 @@
   border-radius: 50%;
   background: color-mix(in oklab, var(--note-paper), #4a3a1e 48%);
   box-shadow: 0 0 0 1.5px rgb(255 255 255 / 0.55);
-  opacity: var(--handle-reveal, 0);
+  opacity: var(--note-ui-reveal, 0);
   transition: opacity 120ms ease;
 }
 

@@ -9,7 +9,7 @@
 
 .note:hover,
 .note:focus-within {
-  --handle-reveal: 1;
+  --note-ui-reveal: 1;
 }
 
 /* Applied imperatively while a move gesture is live. */
