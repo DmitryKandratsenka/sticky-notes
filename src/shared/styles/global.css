@@ -30,3 +30,9 @@ button {
   padding: 0;
   cursor: pointer;
 }
+
+/* Set by the gesture engine while a drag is in flight. */
+body.gesture-active {
+  user-select: none;
+  -webkit-user-select: none;
+}

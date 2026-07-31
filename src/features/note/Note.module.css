@@ -3,6 +3,17 @@
   /* transform is reserved for gesture code; nothing else may set it. */
   user-select: none;
   touch-action: none;
+  cursor: grab;
+}
+
+/* Applied imperatively while a move gesture is live. */
+.note.lifted {
+  will-change: transform;
+}
+
+.note.lifted .paper {
+  transform: rotate(0deg) scale(1.02);
+  box-shadow: var(--shadow-note-lifted);
 }
 
 .paper {
