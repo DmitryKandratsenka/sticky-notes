@@ -1,13 +1,18 @@
-/* Design tokens. Note colors live in the palette in src/model. */
+/* Design tokens. Note paper colors live in src/features/note/notePalette.ts. */
 :root {
-  --color-desk: #ece5d8;
-  --color-ink: #3c3530;
-  --color-ink-soft: #79706a;
+  --color-desk: #e8dfcf;
+  --color-ink: #3b3327;
+  --color-ink-soft: #8a7d6a;
 
-  --shadow-note: 0 1px 2px rgb(60 50 30 / 0.18), 0 6px 16px -6px rgb(60 50 30 / 0.28);
+  --shadow-note:
+    0 1px 1px rgb(74 58 30 / 0.14), 0 3px 6px rgb(74 58 30 / 0.1),
+    0 12px 22px -10px rgb(74 58 30 / 0.28);
+  --shadow-note-lifted:
+    0 2px 3px rgb(74 58 30 / 0.12), 0 10px 18px rgb(74 58 30 / 0.14),
+    0 28px 44px -16px rgb(74 58 30 / 0.34);
 
   --radius-note: 2px;
 
-  --font-hand: 'Shantell Sans', 'Comic Sans MS', cursive;
+  --font-hand: 'Shantell Sans', 'Comic Sans MS', 'Segoe Print', cursive;
   --font-ui: 'Shantell Sans', system-ui, sans-serif;
 }

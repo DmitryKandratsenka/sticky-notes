@@ -1,0 +1,24 @@
+/* Shantell Sans (SIL OFL 1.1) — self-hosted, see ../assets/fonts/OFL-LICENSE.txt */
+@font-face {
+  font-family: 'Shantell Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/shantell-sans-latin-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Shantell Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/shantell-sans-latin-500-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Shantell Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/shantell-sans-latin-700-normal.woff2') format('woff2');
+}
