@@ -4,6 +4,7 @@ import {
   clamp,
   clampPosition,
   clampSize,
+  drawnNoteRect,
   isPointInRect,
   rectFromCorners,
   rectsEqual,
@@ -89,6 +90,41 @@ describe('roundRect / rectsEqual', () => {
     const a: Rect = { x: 1, y: 2, width: 3, height: 4 };
     expect(rectsEqual(a, { ...a })).toBe(true);
     expect(rectsEqual(a, { ...a, width: 5 })).toBe(false);
+  });
+});
+
+describe('drawnNoteRect', () => {
+  const origin = { x: 400, y: 300 };
+
+  it('spans from the origin toward the pointer', () => {
+    expect(drawnNoteRect(origin, { x: 600, y: 480 }, LIMITS, BOUNDS)).toEqual({
+      x: 400,
+      y: 300,
+      width: 200,
+      height: 180,
+    });
+  });
+
+  it('enforces the minimum size while drawing up-left, anchored at the pointer side', () => {
+    const rect = drawnNoteRect(origin, { x: 380, y: 260 }, LIMITS, BOUNDS);
+    expect(rect).toEqual({ x: 300, y: 200, width: 100, height: 100 });
+  });
+
+  it('caps at the maximum size, growing away from the origin corner', () => {
+    const rect = drawnNoteRect(origin, { x: 999, y: 999 }, LIMITS, BOUNDS);
+    expect(rect).toEqual({ x: 400, y: 300, width: 500, height: 500 });
+  });
+
+  it('ignores pointer travel outside the board', () => {
+    const rect = drawnNoteRect({ x: 100, y: 100 }, { x: -500, y: 50 }, LIMITS, BOUNDS);
+    expect(rect.x).toBe(0);
+    expect(rect.width).toBe(100);
+  });
+
+  it('keeps the min-size note inside the board when drawn in a corner', () => {
+    const rect = drawnNoteRect({ x: 990, y: 790 }, { x: 998, y: 798 }, LIMITS, BOUNDS);
+    expect(rect.x + rect.width).toBeLessThanOrEqual(BOUNDS.width);
+    expect(rect.y + rect.height).toBeLessThanOrEqual(BOUNDS.height);
   });
 });
 

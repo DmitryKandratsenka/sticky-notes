@@ -72,6 +72,26 @@ export function rectsEqual(a: Rect, b: Rect): boolean {
   return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
 }
 
+/**
+ * The rect a draw-to-create gesture produces: spans from the origin toward the
+ * pointer, capped to the size limits (growing away from the origin corner),
+ * with the minimum size enforced and the result kept inside the bounds. Used
+ * for both the live ghost preview and the final note, so what you see is
+ * exactly what you get.
+ */
+export function drawnNoteRect(origin: Point, point: Point, limits: SizeLimits, bounds: Size): Rect {
+  const target = {
+    x: clamp(point.x, 0, bounds.width),
+    y: clamp(point.y, 0, bounds.height),
+  };
+  const size = clampSize(rectFromCorners(origin, target), limits);
+  const position = {
+    x: target.x >= origin.x ? origin.x : origin.x - size.width,
+    y: target.y >= origin.y ? origin.y : origin.y - size.height,
+  };
+  return { ...clampPosition(position, size, bounds), width: size.width, height: size.height };
+}
+
 interface AxisSpan {
   readonly start: number;
   readonly length: number;
