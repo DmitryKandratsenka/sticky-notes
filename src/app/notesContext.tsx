@@ -1,6 +1,5 @@
 import { createContext, useContext, useReducer, type Dispatch, type ReactNode } from 'react';
 
-import { type Note } from '../model/note';
 import {
   EMPTY_BOARD_STATE,
   notesReducer,
@@ -12,19 +11,13 @@ import { invariant } from '../shared/lib/invariant';
 const NotesStateContext = createContext<BoardState | null>(null);
 const NotesDispatchContext = createContext<Dispatch<NotesAction> | null>(null);
 
-interface NotesProviderProps {
-  readonly initialNotes: readonly Note[];
-  readonly children: ReactNode;
-}
-
 /**
  * State and dispatch live in separate contexts so components that only
- * dispatch (toolbar-like UI) never re-render on state changes.
+ * dispatch (toolbar-like UI) never re-render on state changes. The board
+ * starts empty; NotesPersistence hydrates it from the repository.
  */
-export function NotesProvider({ initialNotes, children }: NotesProviderProps) {
-  const [state, dispatch] = useReducer(notesReducer, initialNotes, (notes) =>
-    notesReducer(EMPTY_BOARD_STATE, { type: 'notes/hydrated', notes }),
-  );
+export function NotesProvider({ children }: { readonly children: ReactNode }) {
+  const [state, dispatch] = useReducer(notesReducer, EMPTY_BOARD_STATE);
   return (
     <NotesDispatchContext.Provider value={dispatch}>
       <NotesStateContext.Provider value={state}>{children}</NotesStateContext.Provider>

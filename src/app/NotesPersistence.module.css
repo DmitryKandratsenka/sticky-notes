@@ -1,0 +1,18 @@
+.loading {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-hand);
+  font-size: 15px;
+  color: var(--color-ink-soft);
+  /* Appears only if loading takes noticeable time; avoids a flash. */
+  opacity: 0;
+  animation: appear 200ms ease 250ms forwards;
+}
+
+@keyframes appear {
+  to {
+    opacity: 1;
+  }
+}

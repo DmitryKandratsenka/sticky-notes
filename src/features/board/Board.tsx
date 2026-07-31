@@ -6,12 +6,14 @@ import styles from './Board.module.css';
 import { TrashApiProvider } from './trashContext';
 import { TrashZone } from './TrashZone';
 import { useDrawToCreate } from './useDrawToCreate';
+import { useReclampOnResize } from './useReclampOnResize';
 
 export function Board() {
   const { notes } = useNotesState();
   const boardRef = useRef<HTMLDivElement>(null);
   const ghostRef = useRef<HTMLDivElement>(null);
   const draw = useDrawToCreate(boardRef, ghostRef);
+  useReclampOnResize(boardRef);
 
   return (
     <TrashApiProvider>

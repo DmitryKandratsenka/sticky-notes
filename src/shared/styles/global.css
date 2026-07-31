@@ -19,6 +19,7 @@ body {
   overflow: hidden;
   font-family: var(--font-ui);
   color: var(--color-ink);
+  background: var(--color-desk);
   -webkit-font-smoothing: antialiased;
 }
 
