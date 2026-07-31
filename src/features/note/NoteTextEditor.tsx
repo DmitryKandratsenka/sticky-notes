@@ -25,8 +25,10 @@ export function NoteTextEditor({ initialText, onClose }: NoteTextEditorProps) {
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    // Keys typed here are text input: the note's own shortcuts (Delete
+    // removes the note, arrows nudge it) must never see them.
+    event.stopPropagation();
     if (event.key === 'Escape') {
-      event.stopPropagation();
       close(null);
     } else if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
       close(event.currentTarget.value);

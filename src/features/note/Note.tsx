@@ -3,11 +3,13 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type KeyboardEvent,
   type PointerEvent,
   type RefObject,
 } from 'react';
 
 import { useNotesDispatch } from '../../app/notesContext';
+import { clampPosition, type Point } from '../../model/geometry';
 import { type Note as NoteData } from '../../model/note';
 import { hashString } from '../../shared/lib/hash';
 import styles from './Note.module.css';
@@ -35,6 +37,16 @@ interface NoteStyle extends CSSProperties {
  * open. Ignore dblclicks arriving right after a finished gesture.
  */
 const DBLCLICK_SUPPRESSION_MS = 350;
+
+const NUDGE_PX = 8;
+const NUDGE_LARGE_PX = 24;
+
+const ARROW_DIRECTIONS: Readonly<Record<string, Point>> = {
+  ArrowLeft: { x: -1, y: 0 },
+  ArrowRight: { x: 1, y: 0 },
+  ArrowUp: { x: 0, y: -1 },
+  ArrowDown: { x: 0, y: 1 },
+};
 
 /** Resting tilt in one of a few deterministic steps, so the desk looks hand-made. */
 function restingTiltDeg(id: string): number {
@@ -75,9 +87,36 @@ export const Note = memo(function Note({ note, boardRef }: NoteProps) {
 
   const handleEditorClose = (text: string | null) => {
     setEditing(false);
+    noteRef.current?.focus();
     if (text !== null && text !== note.text) {
       dispatch({ type: 'note/textEdited', id: note.id, text });
     }
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (editing || event.target !== event.currentTarget) return;
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      setEditing(true);
+      return;
+    }
+    if (event.key === 'Delete' || event.key === 'Backspace') {
+      event.preventDefault();
+      dispatch({ type: 'note/removed', id: note.id });
+      return;
+    }
+    const direction = ARROW_DIRECTIONS[event.key];
+    const board = boardRef.current;
+    if (direction === undefined || board === null) return;
+    event.preventDefault();
+    const step = event.shiftKey ? NUDGE_LARGE_PX : NUDGE_PX;
+    const position = clampPosition(
+      { x: note.rect.x + direction.x * step, y: note.rect.y + direction.y * step },
+      note.rect,
+      { width: board.clientWidth, height: board.clientHeight },
+    );
+    dispatch({ type: 'note/moved', id: note.id, position });
   };
 
   // Stacking goes through --note-z (not an inline z-index) so gesture CSS
@@ -98,8 +137,10 @@ export const Note = memo(function Note({ note, boardRef }: NoteProps) {
       className={styles.note}
       style={style}
       aria-label="Sticky note"
+      tabIndex={0}
       onPointerDown={handlePointerDown}
       onDoubleClick={handleDoubleClick}
+      onKeyDown={handleKeyDown}
     >
       <div className={styles.paper}>
         {editing ? (

@@ -15,9 +15,17 @@ export function Board() {
   const draw = useDrawToCreate(boardRef, ghostRef);
   useReclampOnResize(boardRef);
 
+  const isEmpty = Object.keys(notes).length === 0;
+
   return (
     <TrashApiProvider>
       <div className={styles.board} ref={boardRef} onPointerDown={draw.onPointerDown}>
+        {isEmpty && (
+          <div className={styles.emptyHint} aria-hidden="true">
+            <span className={styles.emptyTitle}>the desk is clear</span>
+            <span>draw a rectangle anywhere — or just click — to stick a note</span>
+          </div>
+        )}
         {Object.values(notes).map((note) => (
           <Note key={note.id} note={note} boardRef={boardRef} />
         ))}

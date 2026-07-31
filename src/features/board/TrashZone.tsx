@@ -19,6 +19,10 @@ export function TrashZone() {
   useEffect(() => {
     const zone = zoneRef.current;
     if (zone === null) return;
+    const clearPulse = () => {
+      toggle(zone, styles.pulse, false);
+    };
+    zone.addEventListener('animationend', clearPulse);
     apiRef.current = {
       getRect: () => {
         const rect = zone.getBoundingClientRect();
@@ -31,8 +35,14 @@ export function TrashZone() {
       setHot: (hot) => {
         toggle(zone, styles.hot, hot);
       },
+      pulse: () => {
+        clearPulse();
+        void zone.offsetWidth; // restart the animation if one was mid-flight
+        toggle(zone, styles.pulse, true);
+      },
     };
     return () => {
+      zone.removeEventListener('animationend', clearPulse);
       apiRef.current = null;
     };
   }, [apiRef]);

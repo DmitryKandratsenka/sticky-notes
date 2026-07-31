@@ -93,6 +93,7 @@ export function useNoteMove(
     onDragEnd: ({ baseline, delta }) => {
       settle(baseline);
       if (baseline.hot) {
+        trashApiRef.current?.pulse();
         dispatch({ type: 'note/removed', id: note.id });
         return;
       }

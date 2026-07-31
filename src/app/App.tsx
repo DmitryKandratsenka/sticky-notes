@@ -21,6 +21,7 @@ export function App() {
           <Board />
           <header className={styles.header}>
             <h1 className={styles.wordmark}>Sticky Notes</h1>
+            <p className={styles.tagline}>drag · draw · toss</p>
           </header>
         </main>
       </NotesPersistence>

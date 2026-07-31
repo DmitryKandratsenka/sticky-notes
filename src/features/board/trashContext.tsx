@@ -17,6 +17,8 @@ export interface TrashZoneApi {
   setAwake: (awake: boolean) => void;
   /** The dragged pointer is currently over the tray. */
   setHot: (hot: boolean) => void;
+  /** A note was just dropped in: play the gulp. */
+  pulse: () => void;
 }
 
 const TrashApiContext = createContext<RefObject<TrashZoneApi | null> | null>(null);

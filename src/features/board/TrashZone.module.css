@@ -15,7 +15,8 @@
   background: rgb(120 96 60 / 0.05);
   opacity: 0.65;
   transition:
-    transform 160ms ease,
+    scale 160ms ease,
+    rotate 160ms ease,
     opacity 160ms ease,
     background-color 160ms ease,
     border-color 160ms ease,
@@ -42,7 +43,7 @@
 /* A note is being dragged somewhere on the desk. */
 .zone.awake {
   opacity: 1;
-  transform: scale(1.05);
+  scale: 1.05;
   z-index: 9999; /* above resting notes, below the lifted note (10000) */
 }
 
@@ -51,9 +52,29 @@
   color: #b3402e;
   border: 2px solid color-mix(in oklab, #c74f36, transparent 25%);
   background: rgb(199 79 54 / 0.12);
-  transform: scale(1.14) rotate(-2deg);
+  scale: 1.14;
+  rotate: -2deg;
 }
 
 .zone.hot .lid {
   transform: rotate(14deg) translateY(-1.5px);
+}
+
+/* A note just went in. */
+.zone.pulse {
+  animation: gulp 340ms ease;
+}
+
+@keyframes gulp {
+  0% {
+    scale: 1;
+  }
+  35% {
+    scale: 1.24;
+    rotate: -5deg;
+  }
+  100% {
+    scale: 1;
+    rotate: 0deg;
+  }
 }
