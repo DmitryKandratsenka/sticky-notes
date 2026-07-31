@@ -69,11 +69,13 @@ export function useDrawToCreate(
         return { origin: toLocal(origin, boardOrigin), boardOrigin, bounds, ghost };
       },
       onDragMove: ({ baseline, point }) => {
-        const rect = drawnNoteRect(
-          baseline.origin,
-          toLocal(point, baseline.boardOrigin),
-          NOTE_SIZE_LIMITS,
-          baseline.bounds,
+        const rect = roundRect(
+          drawnNoteRect(
+            baseline.origin,
+            toLocal(point, baseline.boardOrigin),
+            NOTE_SIZE_LIMITS,
+            baseline.bounds,
+          ),
         );
         const { ghost } = baseline;
         ghost.style.left = `${rect.x}px`;

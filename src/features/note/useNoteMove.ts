@@ -1,4 +1,5 @@
 import { type RefObject } from 'react';
+import { flushSync } from 'react-dom';
 
 import { useNotesDispatch } from '../../app/notesContext';
 import { clampPosition, isPointInRect, type Rect, type Size } from '../../model/geometry';
@@ -81,7 +82,10 @@ export function useNoteMove(
     },
     onDragMove: ({ baseline, delta, point }) => {
       const d = boardDelta(baseline, delta);
-      baseline.node.style.transform = `translate3d(${d.x}px, ${d.y}px, 0)`;
+      // Whole pixels only: fractional (trackpad) offsets re-rasterize the
+      // note's text at a different subpixel phase every frame — visible as
+      // shimmering while dragging.
+      baseline.node.style.transform = `translate3d(${Math.round(d.x)}px, ${Math.round(d.y)}px, 0)`;
 
       const hot = baseline.trashRect !== null && isPointInRect(point, baseline.trashRect);
       if (hot !== baseline.hot) {
@@ -91,21 +95,29 @@ export function useNoteMove(
       }
     },
     onDragEnd: ({ baseline, delta }) => {
-      settle(baseline);
+      // flushSync guarantees the new left/top are in the DOM before the
+      // gesture transform is cleared below — one atomic frame, even on end
+      // paths whose React flush would otherwise be deferred past a paint
+      // (e.g. the buttons === 0 commit inside a continuous pointermove).
       if (baseline.hot) {
         trashApiRef.current?.pulse();
-        dispatch({ type: 'note/removed', id: note.id });
-        return;
+        flushSync(() => {
+          dispatch({ type: 'note/removed', id: note.id });
+        });
+      } else {
+        const d = boardDelta(baseline, delta);
+        flushSync(() => {
+          dispatch({
+            type: 'note/moved',
+            id: note.id,
+            position: {
+              x: Math.round(baseline.rect.x + d.x),
+              y: Math.round(baseline.rect.y + d.y),
+            },
+          });
+        });
       }
-      const d = boardDelta(baseline, delta);
-      dispatch({
-        type: 'note/moved',
-        id: note.id,
-        position: {
-          x: Math.round(baseline.rect.x + d.x),
-          y: Math.round(baseline.rect.y + d.y),
-        },
-      });
+      settle(baseline);
     },
     onDragCancel: ({ baseline }) => {
       settle(baseline);

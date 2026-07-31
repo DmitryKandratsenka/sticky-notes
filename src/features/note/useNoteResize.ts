@@ -1,4 +1,5 @@
 import { useRef, type PointerEvent as ReactPointerEvent, type RefObject } from 'react';
+import { flushSync } from 'react-dom';
 
 import { useNotesDispatch } from '../../app/notesContext';
 import {
@@ -51,11 +52,13 @@ export function useNoteResize(
   const dispatch = useNotesDispatch();
   const pendingHandle = useRef<ResizeHandle | null>(null);
 
+  // Rounded per-frame writes: fractional sizes make text shimmer (see move).
   const applyRect = (baseline: ResizeBaseline, next: Rect) => {
     const { node, rect } = baseline;
-    node.style.transform = `translate3d(${next.x - rect.x}px, ${next.y - rect.y}px, 0)`;
-    node.style.width = `${next.width}px`;
-    node.style.height = `${next.height}px`;
+    const snapped = roundRect(next);
+    node.style.transform = `translate3d(${snapped.x - rect.x}px, ${snapped.y - rect.y}px, 0)`;
+    node.style.width = `${snapped.width}px`;
+    node.style.height = `${snapped.height}px`;
   };
 
   const drag = usePointerDrag<ResizeBaseline>(
@@ -80,13 +83,16 @@ export function useNoteResize(
         );
       },
       onDragEnd: ({ baseline, delta }) => {
-        // width/height/left/top are corrected by the re-render; only the
-        // gesture-owned transform must be cleared by hand.
-        baseline.node.style.removeProperty('transform');
         const next = roundRect(
           resizeRect(baseline.rect, baseline.direction, delta, NOTE_SIZE_LIMITS, baseline.bounds),
         );
-        dispatch({ type: 'note/resized', id: note.id, rect: next });
+        // Commit synchronously, then drop the gesture transform: the new
+        // left/top/width/height and the transform removal reach the DOM in
+        // the same frame on every end path (see useNoteMove.onDragEnd).
+        flushSync(() => {
+          dispatch({ type: 'note/resized', id: note.id, rect: next });
+        });
+        baseline.node.style.removeProperty('transform');
       },
       onDragCancel: ({ baseline }) => {
         baseline.node.style.removeProperty('transform');

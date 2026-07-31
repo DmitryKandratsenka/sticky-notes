@@ -13,6 +13,16 @@
   --note-ui-reveal: 1;
 }
 
+/*
+ * Promote to a compositor layer at press time, while the note is still
+ * stationary: promoting mid-drag (first transform write) re-rasterizes the
+ * note between frames, which reads as a blink. :active holds for the whole
+ * captured drag.
+ */
+.note:active {
+  will-change: transform;
+}
+
 /* Applied imperatively while a move gesture is live. */
 .note.lifted {
   /* Above the awake trash zone (9999) and any organically grown note z. */
