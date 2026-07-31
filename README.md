@@ -4,6 +4,9 @@ A single-page sticky-notes board for desktop browsers, built with **React 19 + T
 scratch — no UI kits, no drag-and-drop libraries, no state-management libraries. Runtime
 dependencies: `react` and `react-dom`, nothing else.
 
+**Live demo:** <https://dmitrykandratsenka.github.io/sticky-notes/> (deployed from `main` by
+[GitHub Actions](.github/workflows/deploy.yml); best experienced on a desktop browser).
+
 ## Features
 
 All four required features, plus all five bonus features:
