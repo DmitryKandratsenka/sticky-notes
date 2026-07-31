@@ -46,9 +46,14 @@ export function useNoteMove(
   note: Note,
   noteRef: RefObject<HTMLElement | null>,
   boardRef: RefObject<HTMLElement | null>,
+  options?: {
+    /** Fires whenever a *started* drag finishes, committed or not. */
+    readonly onGestureSettled?: () => void;
+  },
 ) {
   const dispatch = useNotesDispatch();
   const trashApiRef = useTrashApiRef();
+  const onGestureSettled = options?.onGestureSettled;
 
   const settle = (baseline: MoveBaseline) => {
     const { node } = baseline;
@@ -56,6 +61,7 @@ export function useNoteMove(
     toggleClass(node, styles.lifted, false);
     toggleClass(node, styles.doomed, false);
     trashApiRef.current?.setAwake(false);
+    onGestureSettled?.();
   };
 
   return usePointerDrag<MoveBaseline>({

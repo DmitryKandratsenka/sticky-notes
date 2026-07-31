@@ -73,3 +73,20 @@
   overflow-wrap: anywhere;
   overflow: hidden;
 }
+
+/* Textarea overlay for editing; shares .text so the metrics are identical. */
+.editor {
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  resize: none;
+  cursor: text;
+  user-select: text;
+  overflow: auto;
+}
+
+.editor::placeholder {
+  color: color-mix(in oklab, var(--note-paper) 30%, #3f3526);
+  opacity: 0.55;
+}
