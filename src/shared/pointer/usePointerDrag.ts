@@ -37,8 +37,12 @@ export interface PointerDragHandlers<TBaseline> {
 export interface PointerDragOptions {
   /** Pointer travel (px) that turns a press into a drag. */
   readonly thresholdPx?: number;
-  /** Cursor forced on the whole page while the gesture is active. */
-  readonly dragCursor?: string;
+  /**
+   * Cursor forced on the whole page while the gesture is active. A function is
+   * evaluated when the gesture starts (for cursors that depend on what was
+   * pressed, e.g. resize handles).
+   */
+  readonly dragCursor?: string | (() => string);
 }
 
 interface GestureSession<TBaseline> {
@@ -167,7 +171,8 @@ export function usePointerDrag<TBaseline>(
             const travel = totalDelta(session);
             if (Math.hypot(travel.x, travel.y) < thresholdPx) return;
             document.body.classList.add(BODY_GESTURE_CLASS);
-            document.body.style.setProperty('cursor', dragCursor, 'important');
+            const cursor = typeof dragCursor === 'function' ? dragCursor() : dragCursor;
+            document.body.style.setProperty('cursor', cursor, 'important');
             session.baseline = handlersRef.current.onDragStart({
               origin: session.origin,
               event: moveEvent,

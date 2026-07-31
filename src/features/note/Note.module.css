@@ -6,6 +6,11 @@
   cursor: grab;
 }
 
+.note:hover,
+.note:focus-within {
+  --handle-reveal: 1;
+}
+
 /* Applied imperatively while a move gesture is live. */
 .note.lifted {
   will-change: transform;

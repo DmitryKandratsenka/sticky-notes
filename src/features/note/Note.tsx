@@ -5,7 +5,9 @@ import { type Note as NoteData } from '../../model/note';
 import { hashString } from '../../shared/lib/hash';
 import styles from './Note.module.css';
 import { NOTE_PAPER_COLORS } from './notePalette';
+import { ResizeHandles } from './ResizeHandles';
 import { useNoteMove } from './useNoteMove';
+import { useNoteResize } from './useNoteResize';
 
 interface NoteProps {
   readonly note: NoteData;
@@ -32,6 +34,7 @@ export const Note = memo(function Note({ note, boardRef }: NoteProps) {
   const noteRef = useRef<HTMLElement>(null);
   const dispatch = useNotesDispatch();
   const move = useNoteMove(note, noteRef, boardRef);
+  const resize = useNoteResize(note, noteRef, boardRef);
 
   const handlePointerDown = (event: PointerEvent<HTMLElement>) => {
     // A press anywhere on the note raises it and must not reach the board,
@@ -61,6 +64,7 @@ export const Note = memo(function Note({ note, boardRef }: NoteProps) {
     >
       <div className={styles.paper}>
         <div className={styles.text}>{note.text}</div>
+        <ResizeHandles onHandlePointerDown={resize.onHandlePointerDown} />
       </div>
     </article>
   );
