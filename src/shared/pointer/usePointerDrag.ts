@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
 
 export interface DragPoint {
   readonly x: number;
@@ -69,10 +75,12 @@ const BODY_GESTURE_CLASS = 'gesture-active';
  * Design notes, hard-won from browser quirks:
  * - `setPointerCapture` is best-effort (Firefox throws if the pointer already
  *   ended); listeners live on `window`, so capture is an optimization, not a
- *   correctness requirement.
- * - `pointercancel`, `lostpointercapture`, window `blur` and Escape all cancel;
- *   a `pointermove` with `buttons === 0` commits (missed `pointerup` after a
- *   context menu or OS interrupt). Teardown is idempotent.
+ *   correctness requirement — which is also why `lostpointercapture` is
+ *   deliberately ignored (its ordering around `pointerup` differs across
+ *   browsers and must never cancel a finished drag).
+ * - `pointercancel`, window `blur` and Escape cancel; a `pointermove` with
+ *   `buttons === 0` commits (missed `pointerup` after a context menu or OS
+ *   interrupt). Teardown is idempotent.
  * - Move work is coalesced into animation frames; the pending frame is
  *   cancelled on teardown so a stale frame can never fire after the commit.
  */
@@ -80,8 +88,13 @@ export function usePointerDrag<TBaseline>(
   handlers: PointerDragHandlers<TBaseline>,
   options?: PointerDragOptions,
 ): { readonly onPointerDown: (event: ReactPointerEvent<HTMLElement>) => void } {
+  // Refreshed in a *layout* effect: it runs synchronously inside the commit,
+  // so no pointer event can ever observe callbacks from a previous render. A
+  // passive effect here loses the race against fast successive gestures — the
+  // browser prioritizes input over scheduled tasks, and a drag committed
+  // through stale handlers resurrects the note's pre-drag position.
   const handlersRef = useRef(handlers);
-  useEffect(() => {
+  useLayoutEffect(() => {
     handlersRef.current = handlers;
   });
 
@@ -203,13 +216,12 @@ export function usePointerDrag<TBaseline>(
         { signal },
       );
 
-      target.addEventListener(
-        'lostpointercapture',
-        () => {
-          finish(false);
-        },
-        { signal },
-      );
+      // Deliberately NO `lostpointercapture` handler: listeners live on
+      // `window`, so a lost capture never interrupts the event flow, and
+      // browsers disagree on its ordering around `pointerup` — on a fast
+      // release it can arrive first and would wrongly cancel a finished
+      // drag. Real interruptions are covered by `pointercancel`, the
+      // `buttons === 0` check, window blur and Escape.
 
       window.addEventListener(
         'keydown',

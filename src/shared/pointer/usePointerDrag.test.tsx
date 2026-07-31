@@ -156,6 +156,22 @@ describe('usePointerDrag', () => {
     expect(handlers.onDragMove).not.toHaveBeenCalled();
   });
 
+  it('ignores lostpointercapture, which some browsers fire before pointerup on fast releases', () => {
+    const handlers = makeHandlers();
+    render(<Probe handlers={handlers} />);
+
+    press(100, 100);
+    move(150, 150);
+    renderFrame();
+    screen.getByTestId('target').dispatchEvent(new Event('lostpointercapture'));
+    release(160, 160);
+
+    expect(handlers.onDragCancel).not.toHaveBeenCalled();
+    expect(handlers.onDragEnd).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ delta: { x: 60, y: 60 } }),
+    );
+  });
+
   it('cancels on pointercancel', () => {
     const handlers = makeHandlers();
     render(<Probe handlers={handlers} />);

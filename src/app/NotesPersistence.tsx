@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 
 import { type Note } from '../model/note';
 import { type NotesRepository } from '../services/notesRepository';
@@ -33,8 +33,10 @@ export function NotesPersistence({ repository, seed, children }: NotesPersistenc
   const [ready, setReady] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
 
+  // Layout effect for the same reason as the gesture engine's handlers ref:
+  // the pagehide flush must never read a state snapshot older than the commit.
   const notesRef = useRef(state.notes);
-  useEffect(() => {
+  useLayoutEffect(() => {
     notesRef.current = state.notes;
   });
 
